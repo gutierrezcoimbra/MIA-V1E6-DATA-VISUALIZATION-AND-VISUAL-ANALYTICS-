@@ -1,0 +1,150 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "CY24SU10",
+      "reportVersionAtImport": {
+        "visual": "1.8.95",
+        "report": "2.0.95",
+        "page": "1.3.95"
+      },
+      "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "DatavistaTheme.json",
+      "reportVersionAtImport": {
+        "visual": "1.8.95",
+        "report": "2.0.95",
+        "page": "1.3.95"
+      },
+      "type": "RegisteredResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          },
+          "visible": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "CY24SU10",
+          "path": "BaseThemes/CY24SU10.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "datavista_logo.png",
+          "path": "datavista_logo.png",
+          "type": "Image"
+        },
+        {
+          "name": "DatavistaTheme.json",
+          "path": "DatavistaTheme.json",
+          "type": "CustomTheme"
+        },
+        {
+          "name": "icon_logistics.png",
+          "path": "icon_logistics.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_payments.png",
+          "path": "icon_payments.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_sales.png",
+          "path": "icon_sales.png",
+          "type": "Image"
+        },
+        {
+          "name": "icon_satisfaction.png",
+          "path": "icon_satisfaction.png",
+          "type": "Image"
+        },
+        {
+          "name": "menu_arrow_banner.png",
+          "path": "menu_arrow_banner.png",
+          "type": "Image"
+        },
+        {
+          "name": "menu_arrow.png",
+          "path": "menu_arrow.png",
+          "type": "Image"
+        },
+        {
+          "name": "menu_logistics.png",
+          "path": "menu_logistics.png",
+          "type": "Image"
+        },
+        {
+          "name": "menu_payments.png",
+          "path": "menu_payments.png",
+          "type": "Image"
+        },
+        {
+          "name": "menu_resumen.png",
+          "path": "menu_resumen.png",
+          "type": "Image"
+        },
+        {
+          "name": "menu_sales.png",
+          "path": "menu_sales.png",
+          "type": "Image"
+        },
+        {
+          "name": "menu_satisfaction.png",
+          "path": "menu_satisfaction.png",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": false,
+    "useDefaultAggregateDisplayName": true
+  }
+}

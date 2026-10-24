@@ -1,0 +1,143 @@
+table dim_product
+	lineageTag: f4bf4be1-39d7-4f28-b67e-b672d75e4ed1
+
+	column product_id
+		dataType: string
+		isHidden
+		lineageTag: 3fdb4044-a678-480c-9c53-f731b5a940cc
+		summarizeBy: none
+		sourceColumn: product_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category_name
+		dataType: string
+		lineageTag: 1fc51d1c-99dd-4ada-9d85-5173b54cf3e2
+		summarizeBy: none
+		sourceColumn: product_category_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category_name_english
+		dataType: string
+		isHidden
+		lineageTag: c76305aa-3e89-4c0f-a6df-9860bd43c4c0
+		summarizeBy: none
+		sourceColumn: product_category_name_english
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_name_lenght
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0990a18c-c3c7-4296-a8ce-ae5522f4e986
+		summarizeBy: none
+		sourceColumn: product_name_lenght
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_description_lenght
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 51e3d179-e526-4550-8b1e-01641ecb364c
+		summarizeBy: none
+		sourceColumn: product_description_lenght
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_photos_qty
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6c000941-7975-4502-8c20-ae1de442c879
+		summarizeBy: none
+		sourceColumn: product_photos_qty
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_weight_g
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 64b5a4c7-c117-4134-8acb-7afc2ac37b6a
+		summarizeBy: none
+		sourceColumn: product_weight_g
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_length_cm
+		dataType: int64
+		formatString: 0
+		lineageTag: 74236f07-39aa-41bc-83c7-a4dec2027058
+		summarizeBy: none
+		sourceColumn: product_length_cm
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_height_cm
+		dataType: int64
+		formatString: 0
+		lineageTag: 0f4627cc-c7a1-4467-8d39-bbc9a9c9f8ee
+		summarizeBy: none
+		sourceColumn: product_height_cm
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_width_cm
+		dataType: int64
+		formatString: 0
+		lineageTag: a1e8866e-3131-4563-b7f5-93aab34ce9ad
+		summarizeBy: none
+		sourceColumn: product_width_cm
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'product name' = "Producto " & UPPER(RIGHT(dim_product[product_id], 5))
+		lineageTag: 73e3b3dc-8fcb-45dd-9852-c09a7d50c89f
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Categoría en inglés con formato legible; las vacías se agrupan en Sin categoría.
+	column category_label =
+			VAR c = dim_product[product_category_name_english]
+			RETURN
+			IF(
+			    ISBLANK(c) || c = "",
+			    "Sin categoría",
+			    UPPER(LEFT(c, 1)) & SUBSTITUTE(MID(c, 2, 100), "_", " ")
+			)
+		dataType: string
+		lineageTag: 28e26778-e039-433d-b105-57c6cf440ab5
+		summarizeBy: none
+
+	partition dim_product = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(RutaBase & "dim_products.csv"), [Delimiter=",", Encoding=65001]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"product_id", type text}, {"product_category_name", type text}, {"product_name_lenght", Int64.Type}, {"product_description_lenght", Int64.Type}, {"product_photos_qty", Int64.Type}, {"product_weight_g", Int64.Type}, {"product_length_cm", Int64.Type}, {"product_height_cm", Int64.Type}, {"product_width_cm", Int64.Type}, {"product_category_name_english", type text}}, "en-US"),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Changed Type",{"product_id", "product_category_name", "product_category_name_english", "product_name_lenght", "product_description_lenght", "product_photos_qty", "product_weight_g", "product_length_cm", "product_height_cm", "product_width_cm"}),
+				    #"Duplicados quitados" = Table.Distinct(#"Reordered Columns", {"product_id"})
+				in
+				    #"Duplicados quitados"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

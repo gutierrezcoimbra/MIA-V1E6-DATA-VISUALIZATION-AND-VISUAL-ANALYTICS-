@@ -1,0 +1,467 @@
+table fact_orders
+	lineageTag: 691a8227-0754-4c47-b19c-540e58150d4c
+
+	column order_id
+		dataType: string
+		isHidden
+		lineageTag: f97a22dd-4490-4c6b-80c5-adfcf16715c8
+		summarizeBy: none
+		sourceColumn: order_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_item_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 02899d08-aa0b-4d8a-a090-a985817bd212
+		summarizeBy: sum
+		sourceColumn: order_item_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		isHidden
+		lineageTag: afacd1ff-2dd6-478c-9e5d-a128021cd1dd
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_id
+		dataType: string
+		isHidden
+		lineageTag: 6367189f-adf1-41f4-98e1-bf0e3eb7a24e
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: string
+		isHidden
+		lineageTag: 61953b23-f118-429f-a6f7-270e6fea6d34
+		summarizeBy: none
+		sourceColumn: product_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_status
+		dataType: string
+		lineageTag: 9f630b55-1cb4-46f0-a472-a763d885fe33
+		summarizeBy: none
+		sourceColumn: order_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_sequential
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 152927ca-9a48-4dd1-a1d1-97f1f6f81952
+		summarizeBy: sum
+		sourceColumn: payment_sequential
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_type
+		dataType: string
+		lineageTag: 747fe1cf-01b9-49f1-a95e-e5e5478c073c
+		summarizeBy: none
+		sourceColumn: payment_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_installments
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7669c942-542e-4a8e-b2be-75847e4579de
+		summarizeBy: sum
+		sourceColumn: payment_installments
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_value
+		dataType: double
+		isHidden
+		formatString: #,0.00
+		lineageTag: 00d8f0f4-8d79-4828-906e-3d7d42025235
+		summarizeBy: sum
+		sourceColumn: payment_value
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column price
+		dataType: double
+		isHidden
+		formatString: #,0.00
+		lineageTag: 2aaf26e0-87ba-4f03-ba65-e8aab8de0a16
+		summarizeBy: sum
+		sourceColumn: price
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column freight_value
+		dataType: double
+		isHidden
+		formatString: #,0.00
+		lineageTag: d2a41f88-152e-47f0-807e-cb48408075e7
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_avg_score
+		dataType: double
+		isHidden
+		formatString: 0.00
+		lineageTag: 83ebca1e-4888-4f56-8cdc-e5266429519a
+		summarizeBy: sum
+		sourceColumn: review_avg_score
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_count
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8408e419-a28f-49d9-bff7-cc3bc3dd9a95
+		summarizeBy: sum
+		sourceColumn: review_count
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_min_score
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 30d227f5-d4e3-42f6-b2cb-1b544ee950d5
+		summarizeBy: sum
+		sourceColumn: review_min_score
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_max_score
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ca892809-a3c2-401f-b46b-eae6797ba714
+		summarizeBy: sum
+		sourceColumn: review_max_score
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_creation_date
+		dataType: int64
+		formatString: 0
+		lineageTag: 60a8b989-14a5-4eea-9e10-c2e60b22b891
+		summarizeBy: sum
+		sourceColumn: review_creation_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column shipping_limit_date
+		dataType: int64
+		formatString: 0
+		lineageTag: edb0ea07-55cb-402c-9ceb-e6b24d86b995
+		summarizeBy: sum
+		sourceColumn: shipping_limit_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_purchase_date
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 977f9031-a485-465c-90a2-7fd289871016
+		summarizeBy: sum
+		sourceColumn: order_purchase_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_approved_at
+		dataType: int64
+		formatString: 0
+		lineageTag: d2d3f4ab-aa5c-4c9e-ab95-ded410c6f0ef
+		summarizeBy: none
+		sourceColumn: order_approved_at
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_delivered_carrier_date
+		dataType: int64
+		formatString: 0
+		lineageTag: b1b23c64-12e2-405b-97d1-0a6103c4e82e
+		summarizeBy: sum
+		sourceColumn: order_delivered_carrier_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_delivered_customer_date
+		dataType: int64
+		formatString: 0
+		lineageTag: 8daf84fb-a389-4d65-afbf-8233349799c7
+		summarizeBy: sum
+		sourceColumn: order_delivered_customer_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_estimated_delivery_date
+		dataType: int64
+		formatString: 0
+		lineageTag: 54358917-1a45-448f-8fda-7e5a2b8f6e46
+		summarizeBy: sum
+		sourceColumn: order_estimated_delivery_date
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Días entre la compra y la entrega al cliente (solo pedidos entregados).
+	column delivery_days =
+			VAR d = fact_orders[order_delivered_customer_date]
+			VAR p = fact_orders[order_purchase_date]
+			RETURN
+			IF(
+			    ISBLANK(d),
+			    BLANK(),
+			    DATEDIFF(
+			        DATE(INT(p / 10000), MOD(INT(p / 100), 100), MOD(p, 100)),
+			        DATE(INT(d / 10000), MOD(INT(d / 100), 100), MOD(d, 100)),
+			        DAY
+			    )
+			)
+		dataType: int64
+		formatString: 0
+		lineageTag: 0daeac43-d526-4636-841b-8c518e710b0a
+		summarizeBy: none
+
+	/// Días prometidos al cliente (fecha estimada menos compra), solo pedidos entregados.
+	column promised_days =
+			VAR d = fact_orders[order_delivered_customer_date]
+			VAR p = fact_orders[order_purchase_date]
+			VAR e = fact_orders[order_estimated_delivery_date]
+			RETURN
+			IF(
+			    ISBLANK(d),
+			    BLANK(),
+			    DATEDIFF(
+			        DATE(INT(p / 10000), MOD(INT(p / 100), 100), MOD(p, 100)),
+			        DATE(INT(e / 10000), MOD(INT(e / 100), 100), MOD(e, 100)),
+			        DAY
+			    )
+			)
+		dataType: int64
+		formatString: 0
+		lineageTag: 2a86bc03-7dff-41dd-946f-97a8a4ac9aa9
+		summarizeBy: none
+
+	/// Días entre la fecha estimada y la entrega real. Negativo = adelantado, positivo = retraso.
+	column delivery_delay_days =
+			VAR d = fact_orders[order_delivered_customer_date]
+			VAR e = fact_orders[order_estimated_delivery_date]
+			RETURN
+			IF(
+			    ISBLANK(d),
+			    BLANK(),
+			    DATEDIFF(
+			        DATE(INT(e / 10000), MOD(INT(e / 100), 100), MOD(e, 100)),
+			        DATE(INT(d / 10000), MOD(INT(d / 100), 100), MOD(d, 100)),
+			        DAY
+			    )
+			)
+		dataType: int64
+		formatString: 0
+		lineageTag: 89c5ca15-7ca7-4640-83ee-1560b5def679
+		summarizeBy: none
+
+	/// Puntualidad de la entrega: A tiempo, Con retraso o Sin entregar.
+	column delivery_status =
+			IF(
+			    ISBLANK(fact_orders[delivery_delay_days]),
+			    "Sin entregar",
+			    IF(fact_orders[delivery_delay_days] <= 0, "A tiempo", "Con retraso")
+			)
+		dataType: string
+		lineageTag: b5c5a4a7-4261-4a95-816d-ff2c3bdf7078
+		summarizeBy: none
+
+	/// Rango de días de retraso respecto a la fecha prometida.
+	column delay_bucket =
+			VAR x = fact_orders[delivery_delay_days]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(x), "Sin entregar",
+			    x <= 0, "A tiempo",
+			    x <= 3, "1-3 días",
+			    x <= 7, "4-7 días",
+			    x <= 14, "8-14 días",
+			    "15+ días"
+			)
+		dataType: string
+		lineageTag: 33276462-bdc7-47ee-984b-d50027c85a6f
+		summarizeBy: none
+		sortByColumn: delay_bucket_order
+
+	/// Orden de delay_bucket.
+	column delay_bucket_order =
+			VAR x = fact_orders[delivery_delay_days]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(x), 6,
+			    x <= 0, 1,
+			    x <= 3, 2,
+			    x <= 7, 3,
+			    x <= 14, 4,
+			    5
+			)
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ef30162b-eb15-477a-8ccc-91ba67848640
+		summarizeBy: none
+
+	/// Peso del flete sobre el precio del item.
+	column freight_ratio_band =
+			VAR r = DIVIDE(fact_orders[freight_value], fact_orders[price])
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(r), "Sin dato",
+			    r < 0.1, "Menos de 10%",
+			    r < 0.2, "10% a 20%",
+			    r < 0.3, "20% a 30%",
+			    r < 0.5, "30% a 50%",
+			    "50% o más"
+			)
+		dataType: string
+		lineageTag: edd34930-c2d4-40cc-81af-1168221a15b3
+		summarizeBy: none
+		sortByColumn: freight_ratio_order
+
+	/// Orden de freight_ratio_band.
+	column freight_ratio_order =
+			VAR r = DIVIDE(fact_orders[freight_value], fact_orders[price])
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(r), 6,
+			    r < 0.1, 1,
+			    r < 0.2, 2,
+			    r < 0.3, 3,
+			    r < 0.5, 4,
+			    5
+			)
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5a26007d-e6d9-48de-872f-d95bfc1794c6
+		summarizeBy: none
+
+	/// Medio de pago con etiquetas en español; las combinaciones se agrupan en Mixto.
+	column payment_method =
+			VAR t = fact_orders[payment_type]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(t), "Sin dato",
+			    t = "credit_card", "Tarjeta de crédito",
+			    t = "boleto", "Boleto",
+			    t = "debit_card", "Tarjeta de débito",
+			    t = "voucher", "Voucher",
+			    "Mixto"
+			)
+		dataType: string
+		lineageTag: a71d5d5c-fb6b-4b2e-80b5-cbcd0cccbf58
+		summarizeBy: none
+
+	/// Número de cuotas como etiqueta (1x ... 10x, 11x+).
+	column installments_label =
+			VAR n = fact_orders[payment_installments]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(n), "Sin dato",
+			    n <= 1, "1x",
+			    n > 10, "11x+",
+			    n & "x"
+			)
+		dataType: string
+		lineageTag: e7d397f8-5fcf-4d21-be8e-9f9b852c38c0
+		summarizeBy: none
+		sortByColumn: installments_order
+
+	/// Orden de installments_label.
+	column installments_order =
+			VAR n = fact_orders[payment_installments]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(n), 99,
+			    n <= 1, 1,
+			    n > 10, 11,
+			    n
+			)
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b1cfefd1-d7e8-4b1e-93c1-723dbe7b12ac
+		summarizeBy: none
+
+	/// Calificación redondeada a estrellas enteras (1 a 5).
+	column review_score_int = ROUND(fact_orders[review_avg_score], 0)
+		dataType: int64
+		formatString: 0
+		lineageTag: 78547bf2-8bc8-4f26-9e3b-07b9ebd15939
+		summarizeBy: none
+
+	partition fact_orders = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(RutaBase & "fact_orders.csv"), [Delimiter=",", Encoding=65001]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"", Int64.Type}, {"order_id", type text}, {"order_item_id", Int64.Type}, {"customer_id", type text}, {"seller_id", type text}, {"product_id", type text}, {"order_status", type text}, {"payment_sequential", Int64.Type}, {"payment_type", type text}, {"payment_installments", Int64.Type}, {"payment_value", type number}, {"price", type number}, {"freight_value", type number}, {"review_avg_score", type number}, {"review_count", Int64.Type}, {"review_min_score", Int64.Type}, {"review_max_score", Int64.Type}, {"review_creation_date", Int64.Type}, {"shipping_limit_date", Int64.Type}, {"order_purchase_date", Int64.Type}, {"order_approved_at", Int64.Type}, {"order_delivered_carrier_date", Int64.Type}, {"order_delivered_customer_date", Int64.Type}, {"order_estimated_delivery_date", Int64.Type}}, "en-US"),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{""}),
+				    #"Consultas combinadas" = Table.NestedJoin(#"Removed Columns", {"customer_id"}, dim_customer, {"customer_id"}, "dim_customer", JoinKind.LeftOuter),
+				    #"Consultas combinadas1" = Table.NestedJoin(#"Consultas combinadas", {"seller_id"}, dim_seller, {"seller_id"}, "dim_seller", JoinKind.LeftOuter),
+				    #"Consultas combinadas2" = Table.NestedJoin(#"Consultas combinadas1", {"product_id"}, dim_product, {"product_id"}, "dim_product", JoinKind.LeftOuter)
+				in
+				    #"Consultas combinadas2"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

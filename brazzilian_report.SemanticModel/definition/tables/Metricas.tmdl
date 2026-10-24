@@ -1,0 +1,248 @@
+table Metricas
+	lineageTag: 01338503-49a0-4d8b-81d5-fcfee1622de4
+
+	measure 'Ventas Totales' = SUM(fact_orders[price])
+		formatString: "R$ "#,0
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: 1497c18a-0440-451a-b525-da772d09f54c
+
+	measure 'Flete Total' = SUM(fact_orders[freight_value])
+		formatString: "R$ "#,0
+		displayFolder: 2. Desempeño logístico
+		lineageTag: 99cb6549-238f-4fb9-b353-350b1bf4c211
+
+	measure 'Ingreso Total' = SUM(fact_orders[payment_value])
+		formatString: "R$ "#,0
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: 05bcdbbf-2ee7-48b5-baf8-eb4710b94dbc
+
+	measure 'Ticket Promedio' = DIVIDE([Ventas Totales], DISTINCTCOUNT(fact_orders[order_id]), 0)
+		formatString: "R$ "#,0.00
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: 06af3742-9451-425c-a677-e98528c362ea
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Score Promedio' = AVERAGE(fact_orders[review_avg_score])
+		formatString: 0.00
+		displayFolder: 3. Satisfacción del cliente
+		lineageTag: da55abc5-eacf-42b7-8f37-804ff71892a8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Reseñas' = SUM(fact_orders[review_count])
+		formatString: #,0
+		displayFolder: 3. Satisfacción del cliente
+		lineageTag: 03667958-8087-4404-9540-a4e55c7f8c1c
+
+	/// Promedio de días entre compra y entrega al cliente (solo items entregados). Corregida: la versión original fallaba al restar claves de fecha numéricas.
+	measure 'Dias Promedio Entrega' =
+			// Average days from purchase to delivery (delivered items only)
+			AVERAGE(fact_orders[delivery_days])
+		formatString: 0.0
+		displayFolder: 2. Desempeño logístico
+		lineageTag: 42cd9692-4005-49c0-8fa3-c6f197570e02
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Items Vendidos' = COUNTROWS(fact_orders)
+		formatString: #,0
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: 9dc8cc7f-0c02-4765-8fee-04e4f5e3047e
+
+	measure 'Total Pedidos' = DISTINCTCOUNT(fact_orders[order_id])
+		formatString: #,0
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: fc0bef74-3f6e-455e-8571-fba8c7d04f92
+
+	measure 'Items por Pedido' = DIVIDE([Total Items Vendidos], [Total Pedidos], 0)
+		formatString: 0.00
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: b451a218-97ea-4cf5-87a2-e1846aa4a220
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Clientes Activos' = DISTINCTCOUNT(fact_orders[customer_id])
+		formatString: #,0
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: bfee1947-fda5-4d89-9ad0-09ced2906199
+
+	measure 'Vendedores Activos' = DISTINCTCOUNT(fact_orders[seller_id])
+		formatString: #,0
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: c962e6cb-6180-418d-85b1-10e4caedb2b1
+
+	measure 'Promedio Cuotas' = AVERAGE(fact_orders[payment_installments])
+		formatString: 0.0
+		displayFolder: 4. Métodos de pago
+		lineageTag: 25da24a2-374b-439b-aa12-3632740a1c3a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Promedio de días de retraso sobre la fecha prometida, solo entregas tardías. Corregida: la versión original restaba claves de fecha numéricas.
+	measure 'Promedio Días Retraso' =
+			// Average delay in days, late deliveries only
+			CALCULATE(AVERAGE(fact_orders[delivery_delay_days]), fact_orders[delivery_delay_days] > 0)
+		formatString: 0.0
+		displayFolder: 2. Desempeño logístico
+		lineageTag: d1fefbf6-73dc-42d4-b8fc-ac9f55a5b50a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Porcentaje de items entregados en o antes de la fecha prometida. Corregida: la versión original contaba los items sin entregar como puntuales.
+	measure '% Entregas a Tiempo' =
+			// On-time share among delivered items (undelivered items are excluded from both terms)
+			DIVIDE(
+			    CALCULATE(COUNTROWS(fact_orders), fact_orders[delivery_status] = "A tiempo"),
+			    CALCULATE(COUNTROWS(fact_orders), fact_orders[delivery_status] <> "Sin entregar")
+			)
+		formatString: 0.0%
+		displayFolder: 2. Desempeño logístico
+		lineageTag: 02614110-b143-4c47-b7e1-66b6fa3cd6f9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Ventas (precio) más flete. Evita la duplicación de payment_value en pedidos con varios items.
+	measure 'Facturación Total' = [Ventas Totales] + [Flete Total]
+		formatString: "R$ "#,0
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: c485ab53-bc88-4738-a0ca-87b4b7919770
+
+	/// Ventas del mismo periodo del año anterior.
+	measure 'Ventas Año Anterior' = CALCULATE([Ventas Totales], SAMEPERIODLASTYEAR(dim_date[full_date]))
+		formatString: "R$ "#,0
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: 7de5f89b-49bd-43cf-aaff-66437056dd1b
+
+	/// Variación porcentual de las ventas frente al mismo periodo del año anterior.
+	measure 'Crecimiento Ventas YoY' = DIVIDE([Ventas Totales] - [Ventas Año Anterior], [Ventas Año Anterior])
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: ce82f85a-a0d1-42ed-a63f-586d5c7fdb5b
+
+	/// Ventas acumuladas en el año calendario.
+	measure 'Ventas Acumuladas YTD' = TOTALYTD([Ventas Totales], dim_date[full_date])
+		formatString: "R$ "#,0
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: d5bc4c45-03e7-4c84-9728-3b3de647effc
+
+	/// Peso de la selección sobre el total de ventas del contexto visible.
+	measure '% Participación Ventas' = DIVIDE([Ventas Totales], CALCULATE([Ventas Totales], ALLSELECTED()))
+		formatString: 0.0%
+		displayFolder: 1. Ventas e ingresos
+		lineageTag: 66ad615c-3b19-49a1-b82e-68e6b8c5844f
+
+	/// Promedio de días prometidos entre compra y fecha estimada (pedidos entregados).
+	measure 'Días Entrega Prometidos' = AVERAGE(fact_orders[promised_days])
+		formatString: 0.0
+		displayFolder: 2. Desempeño logístico
+		lineageTag: a79c9cfa-f501-498c-b721-62fca0fbdb9a
+
+	/// Días prometidos menos días reales. Positivo = se entrega antes de lo prometido.
+	measure 'Brecha Entrega (días)' = [Días Entrega Prometidos] - [Dias Promedio Entrega]
+		formatString: 0.0;-0.0;0.0
+		displayFolder: 2. Desempeño logístico
+		lineageTag: 3aecb330-8b73-46bb-bb91-df3ed6238ebf
+
+	/// Porcentaje de items entregados después de la fecha prometida.
+	measure '% Entregas Tardías' =
+			DIVIDE(
+			    CALCULATE(COUNTROWS(fact_orders), fact_orders[delivery_status] = "Con retraso"),
+			    CALCULATE(COUNTROWS(fact_orders), fact_orders[delivery_status] <> "Sin entregar")
+			)
+		formatString: 0.0%
+		displayFolder: 2. Desempeño logístico
+		lineageTag: 42004d84-30b9-4a02-b68d-8185937bd2a4
+
+	/// Pedidos con fecha de entrega al cliente registrada.
+	measure 'Pedidos Entregados' = CALCULATE(DISTINCTCOUNT(fact_orders[order_id]), fact_orders[delivery_status] <> "Sin entregar")
+		formatString: #,0
+		displayFolder: 2. Desempeño logístico
+		lineageTag: f9a06d1c-b6ba-4780-bd29-78eb09043e22
+
+	/// Flete total sobre ventas totales.
+	measure 'Flete % de Ventas' = DIVIDE([Flete Total], [Ventas Totales])
+		formatString: 0.0%
+		displayFolder: 2. Desempeño logístico
+		lineageTag: 2e1b3bed-c6c6-4b5f-b3ac-4372efa74048
+
+	/// Promedio del flete cobrado por item vendido.
+	measure 'Flete Promedio por Item' = AVERAGE(fact_orders[freight_value])
+		formatString: "R$ "#,0.00
+		displayFolder: 2. Desempeño logístico
+		lineageTag: fe5c3add-3c25-40d6-b2ec-6006d40e38e3
+
+	/// Porcentaje de items con calificación de 4 o 5.
+	measure '% Reseñas Positivas' =
+			DIVIDE(
+			    CALCULATE(COUNTROWS(fact_orders), fact_orders[review_avg_score] >= 4),
+			    COUNTA(fact_orders[review_avg_score])
+			)
+		formatString: 0.0%
+		displayFolder: 3. Satisfacción del cliente
+		lineageTag: 83319513-e08e-43bf-a7be-d9006d9e3dbe
+
+	/// Porcentaje de items con calificación de 1 o 2.
+	measure '% Reseñas Negativas' =
+			DIVIDE(
+			    CALCULATE(COUNTROWS(fact_orders), fact_orders[review_avg_score] <= 2),
+			    COUNTA(fact_orders[review_avg_score])
+			)
+		formatString: 0.0%
+		displayFolder: 3. Satisfacción del cliente
+		lineageTag: 7bec7caa-7f61-457c-93ee-c66187f0c8c9
+
+	/// Participación de los pedidos de la selección sobre el total visible.
+	measure '% Pedidos' = DIVIDE([Total Pedidos], CALCULATE([Total Pedidos], ALLSELECTED()))
+		formatString: 0.0%
+		displayFolder: 4. Métodos de pago
+		lineageTag: e2f7cbcb-35a6-4fdf-96ea-b9502c560564
+
+	/// Porcentaje de pedidos pagados en más de una cuota.
+	measure '% Pedidos en Cuotas' = DIVIDE(CALCULATE([Total Pedidos], fact_orders[payment_installments] > 1), [Total Pedidos])
+		formatString: 0.0%
+		displayFolder: 4. Métodos de pago
+		lineageTag: eab46db9-a8d6-44fc-9363-33778a739d52
+
+	/// Calificación promedio de los items entregados en o antes de la fecha prometida.
+	measure 'Score Entregas a Tiempo' = CALCULATE([Score Promedio], fact_orders[delivery_status] = "A tiempo")
+		formatString: 0.00
+		displayFolder: 3. Satisfacción del cliente
+		lineageTag: b3398b36-97c8-430f-b30b-3131becced10
+
+	/// Calificación promedio de los items entregados después de la fecha prometida.
+	measure 'Score Entregas con Retraso' = CALCULATE([Score Promedio], fact_orders[delivery_status] = "Con retraso")
+		formatString: 0.00
+		displayFolder: 3. Satisfacción del cliente
+		lineageTag: 4411f4d8-3f34-4309-ac20-cb4fcf5f3c5e
+
+	/// Calificación promedio solo cuando la selección acumula al menos 300 reseñas (evita ruido de muestras pequeñas).
+	measure 'Score Promedio (min. 300 reseñas)' = IF([Total Reseñas] >= 300, [Score Promedio])
+		formatString: 0.00
+		displayFolder: 3. Satisfacción del cliente
+		lineageTag: fe1adb0d-ccdc-4e3d-bd0e-d4c8e2029c0b
+
+	/// Porcentaje de pedidos pagados solo con tarjeta de crédito.
+	measure '% Pedidos Tarjeta de Crédito' = DIVIDE(CALCULATE([Total Pedidos], fact_orders[payment_method] = "Tarjeta de crédito"), [Total Pedidos])
+		formatString: 0.0%
+		displayFolder: 4. Métodos de pago
+		lineageTag: 577ae8f6-d780-47e6-b335-edd71f3c9a39
+
+	/// Porcentaje de pedidos pagados con boleto bancario.
+	measure '% Pedidos Boleto' = DIVIDE(CALCULATE([Total Pedidos], fact_orders[payment_method] = "Boleto"), [Total Pedidos])
+		formatString: 0.0%
+		displayFolder: 4. Métodos de pago
+		lineageTag: 5807f273-8a08-4ebb-b3b5-0278589f4d70
+
+	partition Metricas = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	annotation PBI_ResultType = Table
+

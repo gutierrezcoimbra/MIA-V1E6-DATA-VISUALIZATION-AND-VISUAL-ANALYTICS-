@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "brazzilian_report"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "b0e4727e-7a6d-4972-91fc-a1082c30e4c6"
+  }
+}

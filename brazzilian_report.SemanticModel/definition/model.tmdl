@@ -1,0 +1,28 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-ES
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["dim_date","dim_product","dim_customer","dim_seller","dim_geolocation","fact_orders","RutaBase","Metricas"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table dim_date
+ref table DateTableTemplate_37b1af07-7d80-4cd5-afea-e3157824eca4
+ref table LocalDateTable_8c357761-1032-4b00-9601-1e40af89f64b
+ref table LocalDateTable_d9f66488-7d2c-491c-9936-b3d6c4bde7f8
+ref table LocalDateTable_2232d725-97c1-4269-87df-ae7fde19a2a8
+ref table dim_product
+ref table dim_customer
+ref table dim_seller
+ref table dim_geolocation
+ref table fact_orders
+ref table Metricas
+
+ref cultureInfo en-US
+

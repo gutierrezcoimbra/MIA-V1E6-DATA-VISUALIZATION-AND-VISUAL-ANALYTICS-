@@ -1,0 +1,183 @@
+table dim_date
+	lineageTag: cdadde4d-6a7b-4728-a46c-1b8776782a00
+	dataCategory: Time
+
+	column date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: f5030fe7-f9f7-4b37-8235-265b2de44fee
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column full_date
+		dataType: dateTime
+		isKey
+		formatString: Long Date
+		lineageTag: d4c5f4a1-8ead-4288-9606-ca0ac0ff777f
+		summarizeBy: none
+		sourceColumn: full_date
+
+		variation Variation
+			isDefault
+			relationship: 71d02f41-1dde-48d5-a04c-84de1c8e499f
+			defaultHierarchy: LocalDateTable_8c357761-1032-4b00-9601-1e40af89f64b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column day_number_of_week
+		dataType: int64
+		formatString: 0
+		lineageTag: 2b1ac935-e621-4c8d-a187-b75d36e537eb
+		summarizeBy: sum
+		sourceColumn: day_number_of_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_name_of_week
+		dataType: string
+		lineageTag: 9b130f5f-13df-4bf1-a9a9-d1c80d0f003c
+		summarizeBy: none
+		sourceColumn: day_name_of_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_number_of_month
+		dataType: int64
+		formatString: 0
+		lineageTag: ac4bf932-3e29-4585-9323-51403ed44661
+		summarizeBy: sum
+		sourceColumn: day_number_of_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_number_of_year
+		dataType: int64
+		formatString: 0
+		lineageTag: 38efff96-8148-448e-ba99-519ec356731b
+		summarizeBy: sum
+		sourceColumn: day_number_of_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column week_number_of_year
+		dataType: int64
+		formatString: 0
+		lineageTag: 6617751e-c9c3-459d-81fa-9eca062817a9
+		summarizeBy: sum
+		sourceColumn: week_number_of_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_name
+		dataType: string
+		lineageTag: 32f90456-6201-47d7-86c0-493517777e21
+		summarizeBy: none
+		sourceColumn: month_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_number_of_year
+		dataType: int64
+		formatString: 0
+		lineageTag: 10825adc-4895-41ec-96df-e7ca50acb622
+		summarizeBy: sum
+		sourceColumn: month_number_of_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column calendar_quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: fc1d7128-a00f-4b40-b270-aed3dd52067b
+		summarizeBy: sum
+		sourceColumn: calendar_quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column calendar_year
+		dataType: int64
+		formatString: 0
+		lineageTag: 7bf00d56-d2b9-4d98-9bde-6d308732bd99
+		summarizeBy: sum
+		sourceColumn: calendar_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column calendar_semester
+		dataType: int64
+		formatString: 0
+		lineageTag: d598e520-7f2f-4c6c-a58b-f27fc20b8232
+		summarizeBy: sum
+		sourceColumn: calendar_semester
+
+		annotation SummarizationSetBy = Automatic
+
+	column end_month
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 214940a7-0e3d-4cb4-9541-704ccdb3ce78
+		summarizeBy: none
+		sourceColumn: end_month
+
+		variation Variation
+			isDefault
+			relationship: 6c7c620d-b10e-413b-8602-9aa322a5bec0
+			defaultHierarchy: LocalDateTable_d9f66488-7d2c-491c-9936-b3d6c4bde7f8.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column end_week
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: ad070d1b-e443-43be-a166-7246cfc5acf2
+		summarizeBy: none
+		sourceColumn: end_week
+
+		variation Variation
+			isDefault
+			relationship: aedc053a-55cc-48ab-8860-4413c728f584
+			defaultHierarchy: LocalDateTable_2232d725-97c1-4269-87df-ae7fde19a2a8.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Año-mes en formato aaaa-mm (ordena cronológicamente como texto).
+	column year_month = FORMAT(dim_date[full_date], "yyyy-MM")
+		dataType: string
+		lineageTag: 64995a4d-9a15-4489-9365-2c85c3387eae
+		summarizeBy: none
+
+	/// Mes abreviado en español.
+	column month_short =
+			SWITCH(
+			    dim_date[month_number_of_year],
+			    1, "Ene", 2, "Feb", 3, "Mar", 4, "Abr", 5, "May", 6, "Jun",
+			    7, "Jul", 8, "Ago", 9, "Sep", 10, "Oct", 11, "Nov", 12, "Dic",
+			    ""
+			)
+		dataType: string
+		lineageTag: 39177b87-4aeb-44e8-ad8b-f13f932c4005
+		summarizeBy: none
+		sortByColumn: month_number_of_year
+
+	partition dim_date = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(RutaBase & "dim_date.csv"), [Delimiter=",", Encoding=65001]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"date_key", Int64.Type}, {"full_date", type date}, {"day_number_of_week", Int64.Type}, {"day_name_of_week", type text}, {"day_number_of_month", Int64.Type}, {"day_number_of_year", Int64.Type}, {"week_number_of_year", Int64.Type}, {"month_name", type text}, {"month_number_of_year", Int64.Type}, {"calendar_quarter", Int64.Type}, {"calendar_year", Int64.Type}, {"calendar_semester", Int64.Type}, {"end_month", type date}, {"end_week", type date}}, "en-US")
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegación
+

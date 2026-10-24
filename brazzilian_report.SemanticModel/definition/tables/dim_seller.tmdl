@@ -1,0 +1,96 @@
+table dim_seller
+	lineageTag: 2a7aa322-de61-47ad-9568-1ff378fca19a
+
+	column seller_id
+		dataType: string
+		isHidden
+		lineageTag: 04f9dac1-e2f3-4084-9f6e-96c2bfef3170
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_zip_code_prefix
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d8f4edc2-93f6-4cfb-ad5c-6c4b09b535a5
+		summarizeBy: none
+		sourceColumn: seller_zip_code_prefix
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_city
+		dataType: string
+		lineageTag: 9cfcf2cf-11a8-405d-ad18-6545cb681e02
+		summarizeBy: none
+		sourceColumn: seller_city
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_state
+		dataType: string
+		lineageTag: b12bcf3b-7928-4b92-830c-33f264bed235
+		summarizeBy: none
+		sourceColumn: seller_state
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_geolocation_lat
+		dataType: double
+		isHidden
+		formatString: 0.0000
+		lineageTag: c4b535a8-1246-4038-88e5-ac87484fa074
+		summarizeBy: none
+		sourceColumn: seller_geolocation_lat
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_geolocation_lng
+		dataType: double
+		isHidden
+		formatString: 0.0000
+		lineageTag: ddaee0bc-8402-4405-b6ee-14c791538c25
+		summarizeBy: none
+		sourceColumn: seller_geolocation_lng
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'seller name' = "Vendedor " & UPPER(RIGHT(dim_seller[seller_id], 5))
+		lineageTag: 19e342a0-ef39-4ed7-beec-b7a05be4e77b
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_seller = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(RutaBase & "olist_sellers_dataset.csv"), [Delimiter=",", Encoding=65001]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"seller_id", type text}, {"seller_zip_code_prefix", Int64.Type}, {"seller_city", type text}, {"seller_state", type text}}, "en-US"),
+				    #"Merged Queries" = Table.NestedJoin(#"Changed Type", {"seller_zip_code_prefix"}, dim_geolocation, {"geolocation_zip_code_prefix"}, "dim_geolocation", JoinKind.LeftOuter),
+				    #"Expanded dim_geolocation" = Table.ExpandTableColumn(#"Merged Queries", "dim_geolocation", {"geolocation_lat", "geolocation_lng"}, {"dim_geolocation.geolocation_lat", "dim_geolocation.geolocation_lng"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded dim_geolocation",{{"dim_geolocation.geolocation_lat", "seller_geolocation_lat"}, {"dim_geolocation.geolocation_lng", "seller_geolocation_lng"}}),
+				    #"Duplicados quitados" = Table.Distinct(#"Renamed Columns", {"seller_id"})
+				in
+				    #"Duplicados quitados"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

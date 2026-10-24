@@ -1,0 +1,7 @@
+expression RutaBase = "C:\Users\UserTwo\Box\Kevin-LPR Share\Maestria\MIA-V1E6-DATA-VISUALIZATION-AND-VISUAL-ANALYTICS-\datawarehouse\" meta [IsParameterQuery=true, Type="Any", IsParameterQueryRequired=true]
+	lineageTag: a39ba999-bfc4-4a45-9d80-f0bf975e25eb
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+

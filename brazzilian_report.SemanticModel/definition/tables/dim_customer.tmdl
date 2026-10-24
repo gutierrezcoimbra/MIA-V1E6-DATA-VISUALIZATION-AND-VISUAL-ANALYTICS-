@@ -1,0 +1,115 @@
+table dim_customer
+	lineageTag: 248a9ebb-f95f-4490-8927-2f6d55344cb9
+
+	column customer_id
+		dataType: string
+		isHidden
+		lineageTag: 3b7dacb4-4d38-48c2-aeb5-8317c2624384
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_unique_id
+		dataType: string
+		isHidden
+		lineageTag: 678cbaf0-e0a4-4f2b-9c68-71ef20488840
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_zip_code_prefix
+		dataType: int64
+		formatString: 0
+		lineageTag: 31472133-27b0-4cdd-8ddf-2dd82e371dfb
+		summarizeBy: none
+		sourceColumn: customer_zip_code_prefix
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_city
+		dataType: string
+		lineageTag: 3dc20834-6daa-4d25-800d-f3e3b93952c7
+		summarizeBy: none
+		sourceColumn: customer_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_state
+		dataType: string
+		lineageTag: 862d540b-8418-4aca-8f49-d7922c1f572c
+		summarizeBy: none
+		sourceColumn: customer_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_geolocation_lat
+		dataType: double
+		isHidden
+		formatString: 0.0000
+		lineageTag: cf910082-08b8-4fe4-87ff-772e068e56be
+		summarizeBy: none
+		sourceColumn: customer_geolocation_lat
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_geolocation_lng
+		dataType: double
+		isHidden
+		formatString: 0.0000
+		lineageTag: 67850082-8efb-459e-9ed7-84f307101f96
+		summarizeBy: none
+		sourceColumn: customer_geolocation_lng
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'customer name' = "Comprador " & UPPER(RIGHT(dim_customer[customer_id], 5))
+		lineageTag: cc0c68d9-c8b3-4d7b-b5cc-402762a30bc7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Región geográfica de Brasil a partir del estado del cliente.
+	column customer_region =
+			VAR s = dim_customer[customer_state]
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    s IN {"AC", "AP", "AM", "PA", "RO", "RR", "TO"}, "Norte",
+			    s IN {"AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"}, "Nordeste",
+			    s IN {"DF", "GO", "MT", "MS"}, "Centro-Oeste",
+			    s IN {"ES", "MG", "RJ", "SP"}, "Sudeste",
+			    s IN {"PR", "RS", "SC"}, "Sur",
+			    "Sin dato"
+			)
+		dataType: string
+		lineageTag: 876db799-78a0-4667-af25-d8bab29147c9
+		summarizeBy: none
+
+	partition dim_customer = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(RutaBase & "olist_customers_dataset.csv"), [Delimiter=",", Encoding=65001]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"customer_id", type text}, {"customer_unique_id", type text}, {"customer_zip_code_prefix", Int64.Type}, {"customer_city", type text}, {"customer_state", type text}}, "en-US"),
+				    #"Merged Queries" = Table.NestedJoin(#"Changed Type", {"customer_zip_code_prefix"}, dim_geolocation, {"geolocation_zip_code_prefix"}, "dim_geolocation", JoinKind.LeftOuter),
+				    #"Expanded dim_geolocation" = Table.ExpandTableColumn(#"Merged Queries", "dim_geolocation", {"geolocation_lat", "geolocation_lng"}, {"dim_geolocation.geolocation_lat", "dim_geolocation.geolocation_lng"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded dim_geolocation",{{"dim_geolocation.geolocation_lat", "customer_geolocation_lat"}, {"dim_geolocation.geolocation_lng", "customer_geolocation_lng"}}),
+				    #"Duplicados quitados" = Table.Distinct(#"Renamed Columns", {"customer_id"})
+				in
+				    #"Duplicados quitados"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
