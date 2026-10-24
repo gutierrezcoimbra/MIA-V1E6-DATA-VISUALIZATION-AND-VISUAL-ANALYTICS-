@@ -234,6 +234,124 @@ table Metricas
 		displayFolder: 4. Métodos de pago
 		lineageTag: 5807f273-8a08-4ebb-b3b5-0278589f4d70
 
+	/// Ventas del mes con mayor facturación entre los meses visibles en la página (ignora el mes del eje).
+	measure 'Ventas Mes Pico' = CALCULATE(MAXX(VALUES(dim_date[year_month]), [Ventas Totales]), ALLSELECTED(dim_date))
+		formatString: "R$ "#,0
+		displayFolder: 5. Storytelling
+		lineageTag: 38fea2e3-ea22-4c87-915d-bf859a2c0e4e
+
+	/// Etiqueta "Mmm yyyy" del mes con mayor facturación entre los meses visibles en la página.
+	measure 'Mes Pico Ventas' =
+			// Month with the highest sales across all visible months
+			VAR MesPico =
+			    CALCULATE(
+			        MAXX(TOPN(1, VALUES(dim_date[year_month]), [Ventas Totales], DESC), dim_date[year_month]),
+			        ALLSELECTED(dim_date)
+			    )
+			RETURN
+			    CALCULATE(MAX(dim_date[month_short]), dim_date[year_month] = MesPico, REMOVEFILTERS(dim_date)) & " " & LEFT(MesPico, 4)
+		displayFolder: 5. Storytelling
+		lineageTag: 2e047553-396d-4f83-86ae-adabac99eeaf
+
+	/// Color de columna: resalta el mes pico y deja el resto en gris (formato condicional del gráfico de storytelling).
+	measure 'Color Barra Historia' = IF([Ventas Totales] = [Ventas Mes Pico], "#034085", "#C3CEDF")
+		displayFolder: 5. Storytelling
+		lineageTag: 8ea07a76-359b-44b1-a02c-c79ed398abb7
+
+	/// Mayor % de entregas tardías mensual del periodo visible. Solo meses con al menos 500 pedidos entregados (evita muestras pequeñas).
+	measure '% Tardías Mes Pico' =
+			CALCULATE(
+			    MAXX(FILTER(VALUES(dim_date[year_month]), [Pedidos Entregados] >= 500), [% Entregas Tardías]),
+			    ALLSELECTED(dim_date)
+			)
+		formatString: 0.0%
+		displayFolder: 5. Storytelling
+		lineageTag: 893bbe16-891a-432d-bb69-bdde021aa097
+
+	/// Etiqueta "Mmm yyyy" del mes con mayor % de entregas tardías (mismo umbral de 500 pedidos entregados).
+	measure 'Mes Pico Retrasos' =
+			// Month with the highest late-delivery rate across all visible months
+			VAR MesPico =
+			    CALCULATE(
+			        MAXX(
+			            TOPN(1, FILTER(VALUES(dim_date[year_month]), [Pedidos Entregados] >= 500), [% Entregas Tardías], DESC),
+			            dim_date[year_month]
+			        ),
+			        ALLSELECTED(dim_date)
+			    )
+			RETURN
+			    CALCULATE(MAX(dim_date[month_short]), dim_date[year_month] = MesPico, REMOVEFILTERS(dim_date)) & " " & LEFT(MesPico, 4)
+		displayFolder: 5. Storytelling
+		lineageTag: 81eb9f77-91a9-4153-a2af-ea547bedc820
+
+	/// % de entregas tardías de todo el periodo visible (referencia para el mes pico).
+	measure '% Entregas Tardías Periodo' = CALCULATE([% Entregas Tardías], ALLSELECTED(dim_date))
+		formatString: 0.0%
+		displayFolder: 5. Storytelling
+		lineageTag: e3b4eab2-a862-4aa0-b656-808896bbf4f2
+
+	/// Crecimiento de ventas ene–ago 2018 vs. ene–ago 2017. Se compara hasta agosto porque es el último mes completo del dataset (mismo corte que el gráfico de evolución de 1 · Ventas).
+	measure 'Crecimiento Ventas Ene-Ago 2018' =
+			VAR Actual = CALCULATE([Ventas Totales], dim_date[calendar_year] = 2018, dim_date[month_number_of_year] <= 8)
+			VAR Anterior = CALCULATE([Ventas Totales], dim_date[calendar_year] = 2017, dim_date[month_number_of_year] <= 8)
+			RETURN
+			    DIVIDE(Actual - Anterior, Anterior)
+		formatString: +0%;-0%;0%
+		displayFolder: 5. Storytelling
+		lineageTag: 5974a163-a3d3-4fb1-a729-53b214e29da0
+
+	/// Estrellas que pierde la reseña cuando la entrega llega tarde (score a tiempo menos score con retraso).
+	measure 'Brecha Score por Retraso' = [Score Entregas a Tiempo] - [Score Entregas con Retraso]
+		formatString: 0.0
+		displayFolder: 5. Storytelling
+		lineageTag: 2ddf7c33-9e57-48ae-a022-42c30b8eee74
+
+	/// Titular dinámico del gráfico de storytelling.
+	measure 'Titulo Storytelling' =
+			"Las ventas crecieron " & FORMAT([Crecimiento Ventas Ene-Ago 2018], "0%")
+			    & " en 2018, pero en el mes más crítico el " & FORMAT([% Tardías Mes Pico], "0%")
+			    & " de las entregas llegó tarde y cada retraso restó " & FORMAT([Brecha Score por Retraso], "0.0")
+			    & " estrellas a la reseña"
+		displayFolder: 5. Storytelling
+		lineageTag: b6966468-550b-44c2-a547-beee2f4ffe92
+
+	/// Anotación sobre el gráfico: mes récord de ventas.
+	measure 'Anotacion Pico Ventas' = "Récord: " & [Mes Pico Ventas] & " · R$ " & FORMAT([Ventas Mes Pico] / 1000, "#,0") & "K  ►"
+		displayFolder: 5. Storytelling
+		lineageTag: 92497275-07da-4d0b-84c6-6cab20c8948b
+
+	/// Anotación sobre el gráfico: mes con más entregas tardías.
+	measure 'Anotacion Pico Retrasos' = "◄  " & [Mes Pico Retrasos] & ": " & FORMAT([% Tardías Mes Pico], "0.0%") & " de entregas tardías"
+		displayFolder: 5. Storytelling
+		lineageTag: 5b10ea0b-52a6-4e07-b1e2-da700ed0122c
+
+	/// Texto de la tarjeta Hito A (crecimiento). Menciona el Black Friday solo si el mes récord es noviembre.
+	measure 'Texto Hito Ventas' =
+			"Ventas ene–ago 2018 vs. mismo periodo de 2017. El mes récord fue " & [Mes Pico Ventas]
+			    & IF(LEFT([Mes Pico Ventas], 3) = "Nov", ", impulsado por el Black Friday.", ".")
+		displayFolder: 5. Storytelling
+		lineageTag: 149bcccc-58e9-4520-bd2d-7eb00887fc60
+
+	/// Texto de la tarjeta Hito B (cuello de botella logístico).
+	measure 'Texto Hito Logistica' =
+			"de las entregas llegaron tarde en " & [Mes Pico Retrasos] & ", frente a "
+			    & FORMAT([% Entregas Tardías Periodo], "0.0%")
+			    & " de promedio: la logística no escaló al ritmo de la demanda."
+		displayFolder: 5. Storytelling
+		lineageTag: d766e717-b69e-4688-8b27-99642315473e
+
+	/// Valor de la tarjeta Métrica clave: score a tiempo vs. con retraso.
+	measure 'Texto Score Comparado' = FORMAT([Score Entregas a Tiempo], "0.0") & " ★  vs.  " & FORMAT([Score Entregas con Retraso], "0.0") & " ★"
+		displayFolder: 5. Storytelling
+		lineageTag: 97b9de0d-0f5b-44f6-a514-559e65b26fb6
+
+	/// Texto de la tarjeta Métrica clave (impacto en satisfacción).
+	measure 'Texto Hito Satisfaccion' =
+			"Reseña promedio de pedidos a tiempo vs. con retraso: cada entrega tardía resta "
+			    & FORMAT([Brecha Score por Retraso], "0.0") & " estrellas."
+		displayFolder: 5. Storytelling
+		lineageTag: 96946182-acad-4070-8d3b-a3913a6baf31
+
 	partition Metricas = m
 		mode: import
 		source =
